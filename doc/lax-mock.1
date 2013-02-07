@@ -1,0 +1,33 @@
+.TH LAX-MOCK "1" "August 2012" "lax #VERSION#" "Laxative manual"
+.SH NAME
+Laxative - Jenkins build mocker
+.SH SYNOPSIS
+.B lax mock
+.SH DESCRIPTION
+A prebuilt-aware laxative tool for mocking Jenkins runs.
+
+Mocks a Jenkins-style build by performing the following:
+
+.IP \(bu
+Generating a fake changelog entry (with version number 0:9.9.9-LAX+999)
+.IP \(bu
+Running the
+.I debian/rules
+prebuilt-stamp target, if present
+.IP \(bu
+Running
+.B lax build --dirty
+.PP
+This command will always trigger a cleanup, and therefore a full package build.
+.SH AUTHORS
+Nick Robinson-Wall <nick@robinson-wall.com>
+
+.SH SEE ALSO
+.BR lax (1)
+
+.BR lax-build (1),
+.BR lax-fakelog (1),
+.BR lax-flush (1),
+.BR lax-make (1),
+.BR lax-updatelog (1),
+.BR lax-version (1)

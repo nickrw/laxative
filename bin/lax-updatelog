@@ -1,0 +1,70 @@
+#!/bin/bash
+
+. /usr/lib/laxative/common-fn
+
+if [[ -z $1 || $1 == "--help" ]]; then
+  usage
+fi
+
+_lax_require_dh_envvars
+_lax_load
+
+if [[ ${LAX_VERSION} == "9.9.9-LAX+999" ]]; then
+  echo "Error: The last changelog entry is for version ${LAX_VERSION}, which is the magic number used by" >&2
+  echo "       \`lax fakelog'. Run \`lax flush' to restore the changelog before attempting a real update" >&2
+  exit 1
+fi
+
+NEXTVER=$1
+
+# Get the date of the previous changelog entry
+checktag=$(git tag -l "${LAX_VERSION}")
+
+if [[ -z $checktag ]]; then
+  echo "Error: Couldn't find git tag \"$LAX_VERSION\" - this is the last version number listed in the changelog." >&2
+  echo "       This could indicate that you have not pulled the tag from the repository, or that it was not tagged." >&2
+  exit 2
+fi
+
+cp debian/changelog debian/.changelog.lax
+
+# Ask git for commit messages from the last version tag to now
+git whatchanged --oneline "${LAX_VERSION}.." | awk '/^[^:]/' > .tmp-changes
+
+ccount=$(wc -l .tmp-changes | awk '{print $1}')
+echo "${ccount} changes since version ${LAX_VERSION}."
+
+newrelease(){
+  set +e
+  echo $1 | grep -F -q "+"
+  if [ $? -eq 1 ]; then
+    dist="stable"
+  else
+    dist="UNRELEASED"
+  fi
+  set -e
+  echo -n "Adding new release to changelog: "
+  dch -v "$1" --force-distribution -D "${dist}" "$2" 2> /dev/null
+}
+
+if [ "${ccount}" -gt 0 ]; then
+  i=0
+  while read line; do
+    if [ $i -eq 0 ]; then
+      newrelease $NEXTVER "${line}"
+    else
+      # Append the rest
+      dch -a "${line}"
+      echo -n '.'
+    fi
+  i=$((i+1))
+  done < .tmp-changes
+else
+  newrelease $NEXTVER "Version number bump"
+fi
+
+echo "done"
+
+rm -rf .tmp-changes
+
+exit 0

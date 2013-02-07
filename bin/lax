@@ -1,0 +1,17 @@
+#!/bin/bash
+
+. /usr/lib/laxative/common-fn
+
+APP=$1
+if [[ -z $APP || $APP == "--help" ]]; then
+  usage
+fi
+
+shift
+
+if [[ -x $DIRN/lax-$APP ]]; then
+  $DIRN/lax-$APP $@
+else
+  echo "Error: Unknown laxative command: $APP" >&2
+  exit 1
+fi

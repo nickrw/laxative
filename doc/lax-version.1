@@ -1,0 +1,105 @@
+.TH LAX-VERSION "1" "August 2012" "lax-version #VERSION#" "Laxative manual"
+.SH NAME
+Laxative - Package version validator and manipulator
+.SH SYNOPSIS
+.B lax version
+.RI [ options ] " version"
+.SH DESCRIPTION
+Used without options
+.BR lax-version (1)
+simply validates the input
+.I version
+and returns it. If the version does not validate an error message is printed to STDOUT and 
+.BR lax-version (1)
+will exit with a return code > 0.
+
+Used with the options described below the input
+.I version
+will be validated and then manipulated before returning it.
+.SH OPTIONS
+.TP
+-i, --increment \fIcomponent\fR
+Increments the selected
+.I component
+of the version number. The
+.I component
+should be one of:
+.RS 8
+.TP
+\(bu major, maj - X.0.0
+.TP
+\(bu minor, min - 0.X.0
+.TP
+\(bu incremental, inc - 0.0.X
+.RE
+.PP
+The 
+.I component
+can also be an integer, where the first component of a version number is zero. If your version number consists of more than three (the standard laxative number of components) you can specify which component by index. You can also use 0, 1, 2 to mean major, minor, incremental.
+.TP
+--snapshot, --no-snapshot
+Explicitly adds or removes the -SNAPSHOT portion of a version number. Note that --snapshot without --dev or a dev build number
+in the input version does not make sense and will return an error.
+.TP
+--dev \fIbuild\fR
+Sets the build number of the version to
+.RI + build
+and sets the epoch to 0.
+.TP
+--epoch \fIepoch\fR
+Replaces any epoch in the input version number, ensuring the output's epoch is set to
+.IR epoch .
+Overrides --release and --dev.
+.TP
+--no-epoch
+Removes any epoch present in the input version. Overrides --epoch, --dev and --release.
+.TP
+--release
+Removes any --dev or input +dev build numbers or snapshots and sets the epoch to 1.
+.SH VERSIONS
+The following are examples of valid version numbers
+.TP
+0.0.1
+The standard x.x.x version number central to all laxative versions. A version number must have at least two components (1.0, 3.2 etc), but there is no upper limit imposed. If you use more than three incrementing versions must be done with the zero-indexed component number as an argument to --increment.
+.TP
+1:0.0.1
+A standard version number with an epoch (0:). An epoch of 0 is used to denote unreleased or development packages. An epoch of 1 is used for production packages. This ensures that version 0:1.0.4 is always considered 'lower' than 1:1.0.3 by the repository, and any accidental attempt at copying a package from dev/staging -> live without going through a release process is ignored.
+.TP
+0:0.0.1+4
+As above, with a build number (+4). Build numbers are used to disambiguate different builds of development versions. E.G. development version 0:0.0.1+4 and 0:0.0.1+5 are iterations of what will eventually be released as 1:0.0.1.
+.TP
+0:0.0.1-SNAPSHOT+4
+As above, with -SNAPSHOT before the build number. This is essentially identical but identifies a package that provides a Java application or library which is a SNAPSHOT version. Specifying -SNAPSHOT without a build number is invalid.
+.PP
+This is the regular expression used to validate versions:
+
+^(([0-9]+):)?((?:[0-9]+\.)+(?:[0-9]+))(?:(-SNAPSHOT)?\+([0-9]+))?$
+.SH EXAMPLES
+.TP
+\fBlax\fR \fBversion\fR --increment \fIinc\fR --dev \fI42\fR \fB1:1.0.8\fR
+Returns:
+.B 0:1.0.9+42
+.TP
+\fBlax\fR \fBversion\fR --increment \fI3\fR --release \fB2.7.0.9\fR
+Returns:
+.B 1:2.7.0.10
+.TP
+\fBlax\fR \fBversion\fR --increment \fIinc\fR --epoch \fI3\fR --release \fB0:0.2.0-SNAPSHOT+4\fR
+Returns:
+.B 3:0.2.1
+.TP
+\fBlax\fR \fBversion\fR --increment \fIinc\fR \fB0.7.10\fR
+Returns:
+.B 0.7.11
+.SH AUTHORS
+Nick Robinson-Wall <nick@robinson-wall.com>
+
+.SH SEE ALSO
+.BR lax (1)
+
+.BR lax-build (1),
+.BR lax-fakelog (1),
+.BR lax-flush (1),
+.BR lax-make (1),
+.BR lax-mock (1),
+.BR lax-updatelog (1)

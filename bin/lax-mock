@@ -1,0 +1,28 @@
+#!/bin/bash
+
+. /usr/lib/laxative/common-fn
+DIRN=$(dirname $0)
+
+usage(){
+  if [[ $DIRN == "/usr/bin" ]]; then
+    exec man lax-mock
+  else
+    exec man $DIRN/../doc/lax-mock.1
+  fi
+}
+
+if [[ $1 == "--help" ]]; then
+  usage
+fi
+
+_lax_load
+
+$DIRN/lax-flush # We expect this to be called by dh clean, but run it anyway
+dh clean
+
+grep -E -q '^prebuilt-stamp:' debian/rules && debian/rules prebuilt-stamp
+
+$DIRN/lax-fakelog 0:9.9.9-LAX+999
+$DIRN/lax-build --dirty
+
+echo "Laxative mock build complete"

@@ -1,0 +1,27 @@
+.TH LAX-FLUSH "1" "August 2012" "lax-flush #VERSION#" "Laxative manual"
+.SH NAME
+Laxative - cleaner
+.SH SYNOPSIS
+.B lax flush
+.SH DESCRIPTION
+This command reverts changes made by other lax commands. It will undo
+any changes to the debian/changelog file and deleted generated package files.
+
+.TP
+.B Warning
+The 
+.I debs/
+directory created by
+.BR lax-build (1)
+will be removed, along with all its contents. Do not store anything in this directory.
+.SH AUTHORS
+Nick Robinson-Wall <nick@robinson-wall.com>
+.SH SEE ALSO
+.BR lax (1)
+
+.BR lax-build (1),
+.BR lax-fakelog (1),
+.BR lax-make (1),
+.BR lax-mock (1),
+.BR lax-updatelog (1),
+.BR lax-version (1)

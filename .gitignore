@@ -1,0 +1,9 @@
+debian/laxative.debhelper.log
+debian/*.debhelper
+debian/files
+debian/*.substvars
+debian/laxative
+debian/.changelog.lax
+debs/
+man/
+*.swp

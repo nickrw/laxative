@@ -1,0 +1,58 @@
+#!/bin/bash
+
+. /usr/lib/laxative/common-fn
+LAX_TEMPLATES=/usr/share/laxative/dh_make
+
+if [[ -z $1 || $1 == "--help" ]]; then
+  usage
+else
+  if [[ ! -d /usr/share/laxative/dh_make/$1 ]]; then
+    echo "Error: Package type $1 is not valid" >&2
+    exit 1
+  else
+    LAX_TYPE=$1
+    LAX_PATH=$LAX_TEMPLATES/$LAX_TYPE
+  fi
+fi
+
+if [[ -z $2 ]]; then
+  echo "Error: Package name not specified" >&2
+  exit 1
+else
+  LAX_PACKAGE=$2
+fi
+
+if [[ $LAX_TYPE =~ "java-" ]]; then
+  if [[ -e pom.xml ]]; then
+    LAX_VERSION=$($(dirname $0)/version-from-pom pom.xml)
+  else
+    echo "Warning: Package type is $LAX_TYPE, but there is no pom.xml file present" >&2
+    echo "   Running \`lax build' will fail until a valid maven pom.xml is present" >&2
+    echo >&2
+  fi
+  echo "Info: If your maven artifactId is *not* the same as this package name, be sure to edit"
+  echo "      the debian/rules and debian/$LAX_PACKAGE.install files. These are set up with the"
+  echo "      assumption that the two are the same"
+  echo
+fi
+
+
+if [[ -z $3 && -z $LAX_VERSION ]]; then
+  echo "Error: Version number not specified and not determined automatically by package type" >&2
+  exit 1
+fi
+
+if [[ ! -z $3 ]]; then
+  LAX_VERSION=$3
+fi
+
+dh_testdir > /dev/null 2>&1
+if [[ $? -eq 0 ]]; then
+  echo "Error: This directory already seems like a valid debian source package"
+  exit 2
+else
+  _lax_require_dh_envvars
+  echo | dh_make -s --native -p ${LAX_PACKAGE}_${LAX_VERSION} --templates $LAX_PATH --defaultless > /dev/null
+  mkdir -p debian/source
+  echo "3.0 (native)" > debian/source/format
+fi

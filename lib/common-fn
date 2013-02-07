@@ -1,0 +1,67 @@
+DIRN=$(dirname $0)
+BASEN=$(basename $0)
+
+usage(){
+  exec man $BASEN
+}
+
+_lax_testdir(){
+  dh_testdir > /dev/null 2>&1
+  if [[ $? -ne 0 ]]; then
+    echo "Error: current working directory does not look like a debian source package" >&2
+    exit 1
+  fi
+}
+  
+_lax_load(){
+  
+  set +e
+  _lax_testdir
+  set -e
+  
+  # Package version number, minus epoch
+  export LAX_VERSION=$(dpkg-parsechangelog | awk '/^Version: / {print $2}' | sed -re 's/^[0-9]+://')
+  if [[ -z $LAX_VERSION ]]; then
+    echo "Error: couldn't determine the version of the debian package using dpkg-parsechangelog" >&2
+    exit 1
+  fi
+  
+  # Source package name
+  export LAX_SOURCE=$(dpkg-parsechangelog | awk '/^Source: / {print $2}')
+  if [[ -z $LAX_SOURCE ]]; then
+    echo "Error: couldn't determine the source name of the debian package using dpkg-parsechangelog" >&2
+    exit 1
+  fi
+  
+  
+  # List of binary packages
+  export LAX_PACKAGES=$(awk '/^Package:/ {print $2}' debian/control)
+  if [[ -z $LAX_PACKAGES ]]; then
+    echo "Error: couldn't find any package names in debian/control" >&2
+    exit 1
+  fi
+  
+}
+
+_lax_pom_version(){
+  if [[ -e pom.xml ]]; then
+    export LAX_POMVERSION=$($DIRN/version-from-pom pom.xml)
+  else
+    echo "Error: no pom.xml found" >&2
+    exit 1
+  fi
+}
+
+_lax_require_dh_envvars(){
+  if [[ -z $DEBFULLNAME || -z $DEBEMAIL ]]; then
+    echo "Error: the environment variables DEBFULLNAME and DEBEMAIL must be specified" >&2
+    echo "The values of these are used to fill out the control fields, and are also necessary" >&2
+    echo "for other laxative commands to run properly." >&2
+    echo >&2
+    echo "E.G. add something like the following to the bottom of your ~/.bashrc file" >&2
+    echo >&2
+    echo "export DEBFULLNAME=\"Joe Bloggs\"" >&2
+    echo "export DEBEMAIL=joe.bloggs@example.com" >&2
+    exit 1
+  fi
+}

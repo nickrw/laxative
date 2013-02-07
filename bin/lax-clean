@@ -1,0 +1,37 @@
+#!/bin/bash
+
+. /usr/lib/laxative/common-fn
+
+if [[ $1 == "--help" ]]; then
+  usage
+fi
+
+if [[ ! -z $1 ]]; then
+  echo "Error: Unrecognised option: $1" >&2
+  exit 1
+fi
+
+_lax_load
+
+for pkg in ${LAX_PACKAGES} ${LAX_SOURCE}; do
+  # lax-build should move things from .. to debs/, but clean both locations
+  rm -rf ../${pkg}_${LAX_VERSION}_a*
+  rm -rf debs/
+done
+
+set +e
+# Revert any changes by fake-changelog
+(
+  if [[ -d .git ]]; then
+    git ls-files debian/changelog --error-unmatch > /dev/null 2>&1
+    if [[ $? -eq 0 ]]; then
+      git checkout debian/changelog
+    else
+      test -e debian/.changelog.lax && mv debian/.changelog.lax debian/changelog
+    fi
+  else
+    test -e debian/.changelog.lax && mv debian/.changelog.lax debian/changelog
+  fi
+)
+
+rm -rf debian/.changelog.lax .tmp-changes

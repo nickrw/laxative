@@ -1,0 +1,36 @@
+#!/bin/bash
+# Generate a fake changelog entry for snapshot builds
+set -e
+
+. /usr/lib/laxative/common-fn
+
+if [[ -z $1 || $1 == "--help" ]]; then
+  usage
+fi
+
+_lax_load
+
+if [ -z "${DEBFULLNAME}" ] ; then
+  DEBFULLNAME=$USER
+fi
+if [ -z "${DEBEMAIL}" ] ; then
+  DEBEMAIL="$USER@$(hostname -f)"
+fi
+
+RFCDATE="$(LANG=C date -R)"
+TMPLOG=$(mktemp --tmpdir=. --suffix=.debcl)
+
+(
+cat <<EOF
+${LAX_SOURCE} ($1) UNRELEASED; urgency=low
+
+  * Fake changelog entry created by laxative (lax fakelog)
+
+ -- ${DEBFULLNAME} <${DEBEMAIL}>  ${RFCDATE}
+
+EOF
+cat debian/changelog
+) > ${TMPLOG}
+mv debian/changelog debian/.changelog.lax # this will be restored by lax-flush, if there is no copy in git
+mv ${TMPLOG} debian/changelog
+rm -rf ${TMPLOG}

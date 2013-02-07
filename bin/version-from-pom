@@ -1,0 +1,17 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+use XML::Simple;
+
+if ($#ARGV != 0) {
+  print STDERR "useage: $0 <path>\n";
+  print STDERR "    <path> : Path to pom.xml\n";
+  exit 1;
+}
+
+my $xml = new XML::Simple;
+my $data = $xml->XMLin($ARGV[0]);
+
+print $data->{version} . "\n";
+
+exit 0;

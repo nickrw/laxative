@@ -1,0 +1,63 @@
+.TH LAX "1" "August 2012" "lax #VERSION#" "Laxative manual"
+.SH NAME
+Laxative - command wrapper
+.SH SYNOPSIS
+.BI "lax " COMMAND
+.RI [ "COMMAND ARGS" ]
+.SH DESCRIPTION
+Laxative assists in creating and building Debian packages.
+
+Each laxative \fICOMMAND\fR is actually an independent script, 
+.BR lax (1)
+is a small wrapper around them. Individual command scripts can be found at
+.BR lax-\fICOMMAND\fR (1)
+.SH COMMANDS
+.TP
+.B build \fR[\fI--dirty\fR]
+Builds the Debian package in the current directory
+.TP
+.BI "fakelog " "version"
+Generates a fake entry in the debian/changelog file
+.TP
+.B flush
+Cleans up any mess made by laxative. (Built packages, changelog entries)
+.TP
+.BI "make " "type name version"
+Generates a new debian package called \fIname\fR of version \fIversion\fR in the current directory,
+based on the set of templates selected by \fItype\fR.
+
+See 
+.BR lax-make (1)
+for the list of valid package types.
+.TP
+.B mock
+Mocks a Jenkins\-style build by generating a fake changelog entry and
+triggering the prebuilt\-stamp target before calling `\fBlax build \-\-dirty\fR'
+.TP
+.BI "updatelog " "version"
+Generates a new changelog entry for version \fIversion\fR, filling it with git commit hashes and messages
+since the last version. This expects a git tag to exist which is identical
+to the last changelog entry's version number.
+.TP
+.B version \fR[\fIoptions\fR] \fBversion\fR
+Validates and manipulates laxative compatible version numbers.
+.SH FILES
+Packages created with
+.BR lax-make (1)
+have \fBlaxative\fR as a build dependency.
+.PP
+Package templates used by
+.BR lax-make (1)
+are located in
+.I /usr/share/laxative/dh_make
+.SH AUTHORS
+Nick Robinson-Wall <nick@robinson-wall.com>
+
+.SH SEE ALSO
+.BR lax-build (1),
+.BR lax-fakelog (1),
+.BR lax-flush (1),
+.BR lax-make (1),
+.BR lax-mock (1),
+.BR lax-updatelog (1),
+.BR lax-version (1)

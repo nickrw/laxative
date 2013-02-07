@@ -1,0 +1,55 @@
+.TH LAX-UPDATELOG "1" "August 2012" "lax-updatelog #VERSION#" "Laxative manual"
+.SH NAME
+Laxative - changelog updater
+.SH SYNOPSIS
+.B lax updatelog
+.I version
+.SH DESCRIPTION
+Generates a new changelog entry in
+.IR debian/changelog .
+This will bump the version number of the package and include details of
+the git commits made since the last entry. A backup of the changelog is
+made in
+.I debian/.changelog.lax
+before writing to it.
+
+This command expects a git tag to exist which is identical to the current
+package version, minus the epoch. If you are running 
+.RB ` lax " " "updatelog " 1:1.0.5'
+and the previous package version is 1:1.0.4 there must be a git tag in place
+named '1.0.4' for the 1:1.0.4 release commit.
+.PP
+.BR lax-flush (1)
+will revert changes made by this command by restoring the version available in the
+git HEAD. If the file has not been committed yet (new package) then it will be grabbed
+from
+.IR debian/.changelog.lax instead.
+.SH ENVIRONMENT
+The following environment variables
+.B must
+be set in order for
+.BR lax-updatelog (1)
+to run. It will exit with an error if either are missing.
+.TP
+.I DEBFULLNAME
+Your full name.
+.TP
+.I DEBEMAIL
+Your email address.
+.SH OPTIONS
+.TP
+.I version
+The version number of the new changelog entry. This must be higher than the
+previous entry's version number.
+.SH AUTHORS
+Nick Robinson-Wall <nick@robinson-wall.com>
+
+.SH SEE ALSO
+.BR lax (1)
+
+.BR lax-build (1),
+.BR lax-fakelog (1)
+.BR lax-flush (1),
+.BR lax-make (1),
+.BR lax-mock (1),
+.BR lax-version (1)

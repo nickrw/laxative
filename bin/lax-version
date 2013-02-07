@@ -1,0 +1,86 @@
+#!/usr/bin/perl
+use warnings;
+use strict;
+use Perl::Version;
+use Getopt::Long qw(:config pass_through);
+use Switch;
+
+my $gethelp;
+my $increment;
+my $snapshot = -1;
+my $noepoch;
+my $makeepoch = -1;
+my $devbuild = 0;
+my $release = 0;
+
+GetOptions (
+  'help'    => \$gethelp,
+  'increment|i=s'  => \$increment,
+  'snapshot!'  => \$snapshot,
+  'dev:i'    => \$devbuild,
+  'epoch:i'  => \$makeepoch,
+  'no-epoch'  => \$noepoch,
+  'release'  => sub { $devbuild = 0; $release = 1; $snapshot = 0; }
+);
+
+$gethelp = 1 if ($#ARGV != 0);
+exec ('man', 'lax-version') if $gethelp;
+
+switch($increment) {
+  case /^maj(or)?$/    { $increment = 0 }
+  case /^min(or)?$/    { $increment = 1 }
+  case /^inc(remental)?$/    { $increment = 2 }
+  case /^[0-9]+$/      { $increment = int($increment) }
+  else        { $increment = -1 }
+}
+
+my $iv = $ARGV[0];
+my $has_epoch = 0;
+my $epoch = '';
+my $ver_compat = '';
+my $has_snap = 0;
+my $build;
+if ($iv =~ /^(([0-9]+):)?((?:[0-9]+\.)+(?:[0-9]+))(?:(-SNAPSHOT)?\+([0-9]+))?$/m) {
+  $has_epoch = 1 if $1;
+  $epoch = $2 if $1;
+  $ver_compat = $3 if $3;
+  $has_snap = 1 if $4;
+  $build = $5 if $5;
+} else {
+  die "Error: invalid version number\n";
+}
+
+my $vo = Perl::Version->new($ver_compat);
+if ($increment >= 0) {
+  eval {
+    $vo->increment($increment);
+    1;
+  } or do {
+    if ($@ =~ /^Component [0-9]+ is out of range/m) {
+      die "Error: Could not increment version number - selected version component is not present\n";
+    } else {
+      print STDERR "Error: Unable to increment version number\n";
+      die $@;
+    }
+  }
+}
+my $assemble = "$vo";
+if (($has_epoch || $makeepoch >= 0 || $release || $devbuild) && ! $noepoch) {
+  if ($makeepoch >= 0) {
+    $epoch = $makeepoch;
+  } else {
+    $epoch = 0 if $devbuild;
+    $epoch = 1 if $release;
+  }
+  $assemble = "$epoch:$assemble";
+}
+$has_snap = 1 if $snapshot == 1;
+$has_snap = 0 if ($release || $snapshot == 0);
+$assemble = "$assemble-SNAPSHOT" if $has_snap;
+$build = $devbuild if $devbuild;
+$build = 0 if $release;
+$assemble = "$assemble+$build" if $build;
+if($has_snap && !$build) {
+  die "Error: final version requested -SNAPSHOT with no +dev build number\n";
+}
+print "$assemble\n";

@@ -1,0 +1,49 @@
+.TH LAX-FAKELOG "1" "August 2012" "lax-fakelog #VERSION#" "Laxative manual"
+.SH NAME
+Laxative - changelog faker
+.SH SYNOPSIS
+.B lax fakelog
+.I version
+.SH DESCRIPTION
+Generates a 'fake' changelog entry in
+.I debian/changelog
+
+.
+This allows a package to step backwards through version numbers, unlike 
+.BR lax-updatelog (1),
+and for generation of a test package which you do not care about preserving.
+.PP
+A 'fake' changelog entry looks something like
+.IP
+.nf
+source-package-name (\fIversion\fR) UNRELEASED; urgency=low
+
+  * Fake changelog entry created by laxative (lax fakelog)
+
+ -- Name <email>  Date
+.fi
+.PP
+Set the
+.IR "DEBFULLNAME " "and " DEBEMAIL
+environment variables to have the generated entry correctly reflect your details.
+
+.BR lax-flush (1)
+will revert changes made by this command.
+.SH OPTIONS
+.TP
+.I version
+The version number of the new changelog entry.
+This does not have to be higher than the previous one
+
+.SH AUTHORS
+Nick Robinson-Wall <nick@robinson-wall.com>
+
+.SH SEE ALSO
+.BR lax (1)
+
+.BR lax-build (1),
+.BR lax-flush (1),
+.BR lax-make (1),
+.BR lax-mock (1),
+.BR lax-updatelog (1),
+.BR lax-version (1)

@@ -1,0 +1,3 @@
+bin/* usr/bin/
+lib/* usr/lib/laxative/
+share/* usr/share/laxative/

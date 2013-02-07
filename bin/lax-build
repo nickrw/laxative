@@ -1,0 +1,41 @@
+#!/bin/bash
+set -e
+
+. /usr/lib/laxative/common-fn
+
+DIRTY=false
+while [[ ! -z $1 ]]; do
+  case $1 in
+    --dirty) DIRTY=true ;;
+    --help) usage ;;
+    *)
+      echo "Error: Unrecognised option: $1" >&2
+      exit 1
+      ;;
+  esac
+  shift
+done
+
+_lax_load
+
+if $DIRTY; then
+  set +e
+  grep -E -q '^prebuilt-stamp:' debian/rules
+  if [[ $? -eq 0 ]]; then
+    # If prebuilt-stamp is present debian/rules will skip that portion of the build
+    touch prebuilt-stamp
+  fi
+  set -e
+  # Call with -nc to prevent the clean target from being called,
+  # which would erase the prebuilt-stamp and cause the build phase to run again.
+  dpkg-buildpackage -b -nc -uc
+else
+  lax-flush # We expect this to be in debian/rules, but run it anyway
+  dpkg-buildpackage -b -uc
+fi
+
+mkdir debs || true
+
+for pkg in ${LAX_PACKAGES} ${LAX_SOURCE}; do
+  find .. -maxdepth 1 -name "${pkg}_${LAX_VERSION}_*" -exec mv {} debs/ \;
+done

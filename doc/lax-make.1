@@ -1,0 +1,59 @@
+.TH LAX-MAKE "1" "August 2012" "lax-make #VERSION#" "Laxative manual"
+.SH NAME
+Laxative - Debian package creator
+.SH SYNOPSIS
+.BI "lax make " "template" " " "name" " " "version"
+.SH DESCRIPTION
+Create a debian package using a selection of templates def to dh_make,
+based upon a package 'type'. A list of package types and descriptions is
+included below.
+.SH ENVIRONMENT
+The following environment variables
+.B must
+be set in order for
+.BR lax-make (1)
+to run. It will exit with an error if either are missing.
+.TP
+.I DEBFULLNAME
+Your full name.
+.TP
+.I DEBEMAIL
+Your email address.
+.SH OPTIONS
+.TP
+.I template
+The type of the package to create. See the
+.B TEMPLATES
+section below.
+.TP
+.I name
+The package's name. This must conform to Debian Policy:
+
+http://www.debian.org/doc/debian-policy/ch-controlfields.html#s-f-Source
+
+While periods in packages names are supported, it is not recommended as extra trickery is
+required to have a package install a working 
+.I cron.d/
+entry.
+.TP
+.I version
+The package's version number. This field is optional if using a template
+that supports automatic discovery of the package version (E.G. a Java package
+with a pom.xml). Specifying the option here overrides autodiscovery.
+.SH TEMPLATES
+.TP
+.B generic
+An all-purpose basic template with no frills. You will need to add information to complete the package - E.G. specifying which files to include in
+.I debian/package.install 
+.SH AUTHORS
+Nick Robinson-Wall <nick@robinson-wall.com>
+
+.SH SEE ALSO
+.BR lax (1)
+
+.BR lax-build (1),
+.BR lax-fakelog (1),
+.BR lax-flush (1),
+.BR lax-mock (1),
+.BR lax-updatelog (1),
+.BR lax-version (1)

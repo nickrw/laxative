@@ -1,0 +1,38 @@
+.TH LAX-BUILD "1" "August 2012" "lax-build #VERSION#" "Laxative manual"
+.SH NAME
+Laxative - package build wrapper
+.SH SYNOPSIS
+.B lax build
+.RI [ --dirty ]
+.SH DESCRIPTION
+A prebuilt-aware wrapper around
+.BR dpkg-buildpackage (1)
+which will move build .deb/.changes files into a
+.I debs/
+directory inside the package directory (CWD).
+
+Running
+.RB ` "lax build" '
+should do everything necessary to build the Debian package in the current directory.
+.SH OPTIONS
+.TP
+.B --dirty
+If the package has a 
+.B prebuilt-stamp
+target in its
+.I debian/rules
+file then no cleanup operations will be performed with this option passed.
+
+If this option is not specified a clean uperation will be performed first, triggering a full package build.
+
+.SH AUTHORS
+Nick Robinson-Wall <nick@robinson-wall.com>
+
+.SH SEE ALSO
+.BR lax (1)
+
+.BR lax-fakelog (1),
+.BR lax-flush (1),
+.BR lax-make (1),
+.BR lax-mock (1),
+.BR lax-updatelog (1)
