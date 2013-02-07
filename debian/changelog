@@ -1,3 +1,10 @@
+laxative (1.2) stable; urgency=low
+
+  * ef88ea1 lax-version is now aware of package version number in CWD
+  * a9213ec Add a readme
+
+ -- Nicholas Robinson-Wall <nick@robinson-wall.com>  Thu, 07 Feb 2013 15:17:07 +0000
+
 laxative (1.1) stable; urgency=low
 
   * 882c41d Update debhelper compat and standards-version
