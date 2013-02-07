@@ -2,12 +2,12 @@ Source: laxative
 Section: utils
 Priority: extra
 Maintainer: Nicholas Robinson-Wall <nick@robinson-wall.com>
-Build-Depends: debhelper (>= 7.0.50~), build-essential, devscripts, libxml-simple-perl, debhelper (>= 7.0.50~), coreutils (>= 8.5-1), git, rsync, libperl-version-perl
-Standards-Version: 3.8.4
+Build-Depends: debhelper (>= 8.0.0~), build-essential, devscripts, libxml-simple-perl, coreutils (>= 8.5-1), git, rsync, libperl-version-perl
+Standards-Version: 3.9.1
 
 Package: laxative
 Architecture: all
-Depends: ${misc:Depends}, ${perl:Depends}, build-essential, devscripts, libxml-simple-perl, debhelper (>= 7.0.50~), coreutils (>= 8.5-1), git, dh-make, rsync, libperl-version-perl
+Depends: ${misc:Depends}, ${perl:Depends}, build-essential, devscripts, libxml-simple-perl, debhelper (>= 8.0.0~), coreutils (>= 8.5-1), git, dh-make, rsync, libperl-version-perl
 Recommends: libdistro-info-perl
 Description: Laxative debian package helper
  Laxative eases the production and maintenance of debian packages
