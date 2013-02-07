@@ -1,3 +1,9 @@
+laxative (1.1) stable; urgency=low
+
+  * 882c41d Update debhelper compat and standards-version
+
+ -- Nicholas Robinson-Wall <nick@robinson-wall.com>  Thu, 07 Feb 2013 01:21:09 +0000
+
 laxative (1.0) unstable; urgency=low
 
   * Initial Release.
