@@ -3,19 +3,25 @@
 Laxative - Package version validator and manipulator
 .SH SYNOPSIS
 .B lax version
-.RI [ options ] " version"
+.RI [ options "] [" version ]
 .SH DESCRIPTION
-Used without options
 .BR lax-version (1)
-simply validates the input
-.I version
-and returns it. If the version does not validate an error message is printed to STDOUT and 
+validates and manipulates Debian package version numbers. Used with no arguments it will determine the
+version number of the debian source package in the current working directory, validate it and return it.
+.PP
+Various
+.B OPTIONS
+exist for manipulating the version number before it is returned and it is possible to manually specifying
+the initial version number with a non-option argument. Manually specified version numbers are subject to the
+same validation rules (see the
+.B VERSIONS
+section below).
+.PP
+If the
+.B version
+does not validate an error message is printed to STDOUT and 
 .BR lax-version (1)
 will exit with a return code > 0.
-
-Used with the options described below the input
-.I version
-will be validated and then manipulated before returning it.
 .SH OPTIONS
 .TP
 -i, --increment \fIcomponent\fR
@@ -56,6 +62,12 @@ Removes any epoch present in the input version. Overrides --epoch, --dev and --r
 .TP
 --release
 Removes any --dev or input +dev build numbers or snapshots and sets the epoch to 1.
+.TP
+version
+The version number to validate / manipulate. If the version number is omitted
+.BR lax-version (1)
+will attempt to detect the last version number from
+.IR debian/changelog .
 .SH VERSIONS
 The following are examples of valid version numbers
 .TP

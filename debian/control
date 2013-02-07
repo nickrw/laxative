@@ -7,7 +7,7 @@ Standards-Version: 3.9.1
 
 Package: laxative
 Architecture: all
-Depends: ${misc:Depends}, ${perl:Depends}, build-essential, devscripts, libxml-simple-perl, debhelper (>= 8.0.0~), coreutils (>= 8.5-1), git, dh-make, rsync, libperl-version-perl
+Depends: ${misc:Depends}, ${perl:Depends}, build-essential, devscripts, libxml-simple-perl, debhelper (>= 8.0.0~), coreutils (>= 8.5-1), git, dh-make, rsync, libperl-version-perl, libparse-debianchangelog-perl
 Recommends: libdistro-info-perl
 Description: Laxative debian package helper
  Laxative eases the production and maintenance of debian packages

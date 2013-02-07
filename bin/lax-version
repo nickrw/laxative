@@ -14,7 +14,7 @@ my $devbuild = 0;
 my $release = 0;
 
 GetOptions (
-  'help'    => \$gethelp,
+  'help|h'    => \$gethelp,
   'increment|i=s'  => \$increment,
   'snapshot!'  => \$snapshot,
   'dev:i'    => \$devbuild,
@@ -23,7 +23,6 @@ GetOptions (
   'release'  => sub { $devbuild = 0; $release = 1; $snapshot = 0; }
 );
 
-$gethelp = 1 if ($#ARGV != 0);
 exec ('man', 'lax-version') if $gethelp;
 
 switch($increment) {
@@ -34,7 +33,19 @@ switch($increment) {
   else        { $increment = -1 }
 }
 
-my $iv = $ARGV[0];
+my $iv;
+
+if ($#ARGV ne 0) {
+  system ("dh_testdir debian/changelog > /dev/null 2>&1") == 0
+    or die ("Version number not specified on the command line and the current\n",
+    "working directory does not appear to be a Debian source package.\n");
+  use Parse::DebianChangelog;
+  my $changelog = Parse::DebianChangelog->init({ infile => 'debian/changelog' });
+  $iv = $changelog->dpkg->{Version};
+} else {
+  $iv = $ARGV[0];
+}
+
 my $has_epoch = 0;
 my $epoch = '';
 my $ver_compat = '';
@@ -47,7 +58,7 @@ if ($iv =~ /^(([0-9]+):)?((?:[0-9]+\.)+(?:[0-9]+))(?:(-SNAPSHOT)?\+([0-9]+))?$/m
   $has_snap = 1 if $4;
   $build = $5 if $5;
 } else {
-  die "Error: invalid version number\n";
+  die "Error: invalid version number: $iv\n";
 }
 
 my $vo = Perl::Version->new($ver_compat);
