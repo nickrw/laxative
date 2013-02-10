@@ -2,6 +2,9 @@ DIRN=$(dirname $0)
 BASEN=$(basename $0)
 
 usage(){
+  # Less -X option prevents it from clearing the screen, which is particularly
+  # annoying when you're trying to display usage information.
+  export LESS=-X
   exec man $BASEN
 }
 
