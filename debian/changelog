@@ -1,3 +1,13 @@
+laxative (1.3) stable; urgency=low
+
+  * 5f1ada5 Auto-increment and tagging support for lax-updatelog
+  * 4f28806 Only unset / set -e in common-fn if it was set in the first
+    place
+  * 00461fd Prevent usage() from clearing the screen by exporting LESS=-
+    X
+
+ -- Nicholas Robinson-Wall <nick@robinson-wall.com>  Sun, 10 Feb 2013 23:16:24 +0000
+
 laxative (1.2) stable; urgency=low
 
   * ef88ea1 lax-version is now aware of package version number in CWD
