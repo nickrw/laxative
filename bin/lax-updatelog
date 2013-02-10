@@ -6,6 +6,12 @@ if [[ -z $1 || $1 == "--help" ]]; then
   usage
 fi
 
+DO_TAG=false
+if [[ $1 == "--tag" || $1 == "-t" ]]; then
+  shift
+  DO_TAG=true
+fi
+
 _lax_require_dh_envvars
 _lax_load
 
@@ -15,14 +21,24 @@ if [[ ${LAX_VERSION} == "9.9.9-LAX+999" ]]; then
   exit 1
 fi
 
-NEXTVER=$1
+NEXTVER=$(lax-version $@)
+RET=$?
+test $RET -eq 0 || exit $RET
+
+if [[ "${LAX_VERSION}" == "${NEXTVER}" ]]; then
+  echo "Error: The new version (${NEXTVER}) is the same as the most recent changelog entry." >&2
+  exit 1
+fi
+
+echo "Incrementing changelog from version ${LAX_VERSION} to ${NEXTVER}" >&2
 
 # Get the date of the previous changelog entry
 checktag=$(git tag -l "${LAX_VERSION}")
 
 if [[ -z $checktag ]]; then
-  echo "Error: Couldn't find git tag \"$LAX_VERSION\" - this is the last version number listed in the changelog." >&2
-  echo "       This could indicate that you have not pulled the tag from the repository, or that it was not tagged." >&2
+  echo "Error: Couldn't find git tag for the latest version in the changelog (${LAX_VERSION})." >&2
+  echo "       This might indicate tags have not been pulled from a central repository," >&2
+  echo "       or that this version was never tagged." >&2
   exit 2
 fi
 
@@ -66,5 +82,11 @@ fi
 echo "done"
 
 rm -rf .tmp-changes
+
+if $DO_TAG; then
+  echo "Commiting changelog and tagging as ${NEXTVER}"
+  git commit -m "lax-updatelog: Incrementing changelog from ${LAX_VERSION} to ${NEXTVER}" debian/changelog
+  git tag ${NEXTVER}
+fi
 
 exit 0
