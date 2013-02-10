@@ -1,3 +1,4 @@
+# vi: set ft bash
 DIRN=$(dirname $0)
 BASEN=$(basename $0)
 
@@ -15,12 +16,15 @@ _lax_testdir(){
     exit 1
   fi
 }
-  
+
 _lax_load(){
   
-  set +e
+  prevopts=$-
+  if [[ $prevopts =~ 'e' ]]; then
+    set +e
+  fi
+  
   _lax_testdir
-  set -e
   
   # Package version number, minus epoch
   export LAX_VERSION=$(dpkg-parsechangelog | awk '/^Version: / {print $2}' | sed -re 's/^[0-9]+://')
@@ -36,12 +40,15 @@ _lax_load(){
     exit 1
   fi
   
-  
   # List of binary packages
   export LAX_PACKAGES=$(awk '/^Package:/ {print $2}' debian/control)
   if [[ -z $LAX_PACKAGES ]]; then
     echo "Error: couldn't find any package names in debian/control" >&2
     exit 1
+  fi
+  
+  if [[ $prevopts =~ 'e' ]]; then
+    set -e
   fi
   
 }
